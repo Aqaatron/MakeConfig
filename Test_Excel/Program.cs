@@ -41,12 +41,8 @@ namespace Test_Excel
             wDVs = pMatrix.Workbook.Worksheets["DV"];
             wMPC = pMatrix.Workbook.Worksheets["General"];
 
-            //GenerateCV();
-            //GenerateMV();
-
             GenerateConfig();
 
-            //GenerateModels_v2();
 
             XmlSerializer contrexport = new XmlSerializer(typeof(MPCConfig.ControllerConfig));
             using (FileStream fs = new FileStream("CntrCnfgNew.xml", FileMode.Create/*FileMode.OpenOrCreate*/))
@@ -54,81 +50,6 @@ namespace Test_Excel
                 contrexport.Serialize(fs, controllerConfig);
             }
         }
-
-        static void GenerateCV ()
-        {
-            controllerConfig.CVs = new List<CVConfig>();
-
-            int row_index = 2;
-
-            while (!string.IsNullOrEmpty((string)wCVs.Cells[row_index, 1].Value))
-            {
-                controllerConfig.CVs.Add(new CVConfig()
-                {
-                    Name = (string)wCVs.Cells[row_index, 1].Value,
-                    Weigth = 1,
-                    Priority = 1
-                });
-
-                int i = controllerConfig.CVs.Count - 1;
-
-                
-
-                row_index++;
-            }
-
-        }
-
-        static void GenerateMV()
-        {
-            controllerConfig.MVs = new List<MVConfig>();
-
-            int row_index = 2;
-
-            while (!string.IsNullOrEmpty((string)wMVs.Cells[row_index, 1].Value))
-            {
-                controllerConfig.MVs.Add(new MVConfig()
-                {
-                    Name = (string)wMVs.Cells[row_index, 1].Value,
-                    //dMVdown = Convert.ToDouble(wMVs.Cells[row_index, 3].Value),
-                    //dMVup = Convert.ToDouble(wMVs.Cells[row_index, 2].Value),
-                    dMVdown = 1,
-                    dMVup = 1,
-                    Weigth = 1
-
-                });
-
-                int i = controllerConfig.MVs.Count - 1;
-
-                controllerConfig.MVs[i].PV = new ComplexDouble()
-                {
-                    Value = Convert.ToDouble(wMVs.Cells[row_index, 2].Value)
-                };
-
-                controllerConfig.MVs[i].SV = new ComplexDouble()
-                {
-                    Value = Convert.ToDouble(wMVs.Cells[row_index, 2].Value)
-                };
-
-                controllerConfig.MVs[i].HiLimitInput = new ComplexDouble()
-                {
-                    Value = Convert.ToDouble(wMVs.Cells[row_index, 3].Value)
-                };
-
-                controllerConfig.MVs[i].LoLimitInput = new ComplexDouble()
-                {
-                    Value = Convert.ToDouble(wMVs.Cells[row_index, 4].Value)
-                };
-
-
-
-
-                row_index++;
-            }
-
-        }
-
-
 
         static void GenerateConfig()
         {
