@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="6.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MPCConfig">
+      <HintPath>bin\Debug\netcoreapp3.1\MPCConfig.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
