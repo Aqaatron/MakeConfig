@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <Reference Include="MPCConfig">
-      <HintPath>bin\Debug\netcoreapp3.1\MPCConfig.dll</HintPath>
+      <HintPath>..\..\TCore\CalcApp_EXE\EXE\Server\Modules\Controller\MPCConfig.dll</HintPath>
     </Reference>
   </ItemGroup>
 
