@@ -33,7 +33,7 @@ namespace Test_Excel
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            pMatrix = new ExcelPackage(new FileInfo("Configuration_Data_v2.xlsx"));
+            pMatrix = new ExcelPackage(new FileInfo("Configuration_Data.xlsx"));
 
             wMatrix = pMatrix.Workbook.Worksheets["Matrix"];
             wCVs = pMatrix.Workbook.Worksheets["CV"];
@@ -41,15 +41,17 @@ namespace Test_Excel
             wDVs = pMatrix.Workbook.Worksheets["DV"];
             wMPC = pMatrix.Workbook.Worksheets["General"];
 
+
             GenerateConfig();
 
-
             XmlSerializer contrexport = new XmlSerializer(typeof(MPCConfig.ControllerConfig));
-            using (FileStream fs = new FileStream("CntrCnfgNew.xml", FileMode.Create/*FileMode.OpenOrCreate*/))
+            using (FileStream fs = new FileStream("ItsYourMPCConfig.xml", FileMode.Create/*FileMode.OpenOrCreate*/))
             {
                 contrexport.Serialize(fs, controllerConfig);
             }
         }
+
+
 
         static void GenerateConfig()
         {
@@ -80,7 +82,7 @@ namespace Test_Excel
                     controllerConfig.WatchDogOPCPath = Convert.ToString(wMPC.Cells[2, 3].Value);
                 }
             }
-           
+
 
             for (int i = 1; i < 50; i++)
             {
@@ -92,7 +94,7 @@ namespace Test_Excel
 
                         if (coefs.Length == 1 && coefs[0].Contains("CV") && coefs[0].StartsWith('C'))
                         {
-                           if (!string.IsNullOrEmpty((string)wMatrix.Cells[i, j + 1].Value))
+                            if (!string.IsNullOrEmpty((string)wMatrix.Cells[i, j + 1].Value))
                             {
                                 controllerConfig.CVs.Add(new CVConfig()
                                 {
@@ -102,7 +104,8 @@ namespace Test_Excel
                                     Priority = 1
                                 });
                             }
-                           
+
+
                             try
                             {
                                 if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 2].Value))
@@ -272,7 +275,7 @@ namespace Test_Excel
                                     Weigth = 1
                                 });
                             }
-                            
+
 
 
 
@@ -628,7 +631,7 @@ namespace Test_Excel
                                     Description = (string)wMatrix.Cells[i + 2, j].Value
                                 });
                             }
-                            
+
 
 
                             try
@@ -650,6 +653,33 @@ namespace Test_Excel
                                         Value = Convert.ToDouble(wDVs.Cells[row_DV, 2].Value)
                                     };
                                 }
+                            }
+
+
+                            try
+                            {
+                                if (!string.IsNullOrEmpty((string)wDVs.Cells[row_DV, 3].Value))
+                                {
+                                    controllerConfig.DVs[row_DV - 2].ActualStateOPCPath = Convert.ToString(wDVs.Cells[row_DV, 3].Value);
+
+                                }
+                            }
+                            catch
+                            {
+
+                            }
+
+                            try
+                            {
+                                if (!string.IsNullOrEmpty((string)wDVs.Cells[row_DV, 4].Value))
+                                {
+                                    controllerConfig.DVs[row_DV - 2].DesiredStateOPCPath = Convert.ToString(wDVs.Cells[row_DV, 4].Value);
+
+                                }
+                            }
+                            catch
+                            {
+
                             }
 
                             row_DV++;
@@ -682,7 +712,7 @@ namespace Test_Excel
                             {
                                 continue;
                             }
-                            
+
                         }
                         else if (coefs.Contains("G") && coefs.Contains("D") && !coefs.Contains("T") && !coefs.Contains("T2"))
                         {
