@@ -99,9 +99,10 @@ namespace Test_Excel
                                 controllerConfig.CVs.Add(new CVConfig()
                                 {
                                     Name = (string)wMatrix.Cells[i, j + 1].Value,
-                                    Description = (string)wMatrix.Cells[i, j + 2].Value,
+                                    Description = (string)wMatrix.Cells[i, j + 2].Value ?? string.Empty,
                                     Weigth = 1,
-                                    Priority = 1
+                                    Priority = 1,
+                                    EU = string.Empty
                                 });
                             }
 
@@ -271,8 +272,9 @@ namespace Test_Excel
                                 controllerConfig.MVs.Add(new MVConfig()
                                 {
                                     Name = (string)wMatrix.Cells[i + 1, j].Value,
-                                    Description = (string)wMatrix.Cells[i + 2, j].Value,
-                                    Weigth = 1
+                                    Description = (string)wMatrix.Cells[i + 2, j].Value ?? string.Empty,
+                                    Weigth = 1,
+                                    EU = string.Empty
                                 });
                             }
 
@@ -628,7 +630,9 @@ namespace Test_Excel
                                 controllerConfig.DVs.Add(new DVConfig()
                                 {
                                     Name = (string)wMatrix.Cells[i + 1, j].Value,
-                                    Description = (string)wMatrix.Cells[i + 2, j].Value
+                                    Description = (string)wMatrix.Cells[i + 2, j].Value ?? string.Empty,
+                                    EU = string.Empty
+
                                 });
                             }
 
