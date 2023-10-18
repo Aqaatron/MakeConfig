@@ -6,26 +6,20 @@ using System.Collections.Generic;
 using MPCConfig;
 using System.Xml.Serialization;
 using System.Linq;
+using static OfficeOpenXml.ExcelErrorValue;
+using System.Reflection;
+using System.Security;
 
 namespace Test_Excel
 {
     class Program
-    {
-        static List<string> Lines;
-        static List<ReadModel> readModels = new List<ReadModel>();
-
-        static List<Model> models = new List<Model>();
-
-        static List<CV> CVs = new List<CV>();
-        static List<MV> MVs = new List<MV>();
+    {     
         static ExcelPackage pMatrix;
         static ExcelWorksheet wMatrix;
         static ExcelWorksheet wCVs;
         static ExcelWorksheet wMVs;
         static ExcelWorksheet wDVs;
         static ExcelWorksheet wMPC;
-
-        static ExcelWorksheet wApplicaion;
 
         static ControllerConfig controllerConfig = new ControllerConfig();
 
@@ -49,6 +43,8 @@ namespace Test_Excel
             {
                 contrexport.Serialize(fs, controllerConfig);
             }
+            Console.WriteLine("Конфигурация создана успешно!");
+            Console.ReadLine();
         }
 
 
@@ -90,7 +86,7 @@ namespace Test_Excel
                 {
                     if (!string.IsNullOrEmpty((string)wMatrix.Cells[i, j].Value))
                     {
-                        coefs = Convert.ToString(wMatrix.Cells[i, j].Value).Replace(" ", "").Replace("\n", " ").Replace("=", " ").Split(' ', '.');
+                        coefs = Convert.ToString(wMatrix.Cells[i, j].Value).Replace(" ", "").Replace("\n", " ").Replace("=", " ").Replace(".", ",").Split(' ');
 
                         if (coefs.Length == 1 && coefs[0].Contains("CV") && coefs[0].StartsWith('C'))
                         {
@@ -109,158 +105,47 @@ namespace Test_Excel
 
                             try
                             {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 2].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].POV = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wCVs.Cells[row_CV, 2].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wCVs.Cells[row_CV, 2].Value)))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].POV = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wCVs.Cells[row_CV, 2].Value)
-                                    };
-                                }
-                            }
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 3].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].LoLimitInput = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wCVs.Cells[row_CV, 3].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wCVs.Cells[row_CV, 3].Value)))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].LoLimitInput = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wCVs.Cells[row_CV, 3].Value)
-                                    };
-                                }
-                            }
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 4].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].HiLimitInput = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wCVs.Cells[row_CV, 4].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wCVs.Cells[row_CV, 4].Value)))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].HiLimitInput = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wCVs.Cells[row_CV, 4].Value)
-                                    };
-                                }
-                            }
+                                int columNum = 2;
 
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 5].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].LoLimitEng = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wCVs.Cells[row_CV, 5].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wCVs.Cells[row_CV, 5].Value)))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].LoLimitEng = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wCVs.Cells[row_CV, 5].Value)
-                                    };
-                                }
-                            }
+                                object parsingValue = wCVs.Cells[row_CV, columNum].Value;
 
+                                SetCVPropertyValue(nameof(CVConfig.POV), controllerConfig.CVs[row_CV - 2], parsingValue);
 
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
 
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 6].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].HiLimitEng = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wCVs.Cells[row_CV, 6].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wCVs.Cells[row_CV, 6].Value)))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].HiLimitEng = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wCVs.Cells[row_CV, 6].Value)
-                                    };
-                                }
-                            }
+                                SetCVPropertyValue(nameof(CVConfig.LoLimitInput), controllerConfig.CVs[row_CV - 2], parsingValue);
 
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 7].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].ActualStateOPCPath = Convert.ToString(wCVs.Cells[row_CV, 7].Value);
-                                }
-                            }
-                            catch
-                            {
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.HiLimitInput), controllerConfig.CVs[row_CV - 2], parsingValue);
+
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.LoLimitEng), controllerConfig.CVs[row_CV - 2], parsingValue);
+
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.HiLimitEng), controllerConfig.CVs[row_CV - 2], parsingValue);
+
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.ActualStateOPCPath), controllerConfig.CVs[row_CV - 2], parsingValue);
+
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.DesiredStateOPCPath), controllerConfig.CVs[row_CV - 2], parsingValue);
+
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.SSValue), controllerConfig.CVs[row_CV - 2], parsingValue);
 
                             }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 8].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].DesiredStateOPCPath = Convert.ToString(wCVs.Cells[row_CV, 8].Value);
-                                }
-                            }
-                            catch
+                            catch(Exception ex)
                             {
 
+                                Console.WriteLine(ex.Message);
+
                             }
-
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wCVs.Cells[row_CV, 9].Value))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].SSValue = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wCVs.Cells[row_CV, 9].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wCVs.Cells[row_CV, 9].Value)))
-                                {
-                                    controllerConfig.CVs[row_CV - 2].SSValue = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wCVs.Cells[row_CV, 9].Value)
-                                    };
-                                }
-                            }
-
-
-
-
 
                             row_CV++;
                         }
@@ -283,342 +168,84 @@ namespace Test_Excel
 
                             try
                             {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 2].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].PV = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 2].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 2].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].PV = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 2].Value)
-                                    };
-                                }
-                            }
+                                int columNum = 2;
 
+                                object parsingValue = wMVs.Cells[row_MV, columNum].Value;
 
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 3].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].SV = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 3].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 3].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].SV = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 3].Value)
-                                    };
-                                }
-                            }
+                                SetMVPropertyValue(nameof(MVConfig.PV), controllerConfig.MVs[row_MV - 2], parsingValue);
 
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
 
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 4].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].RSV = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 4].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 4].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].RSV = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 4].Value)
-                                    };
-                                }
-                            }
+                                SetMVPropertyValue(nameof(MVConfig.SV), controllerConfig.MVs[row_MV - 2], parsingValue);
 
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
 
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 5].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].OP = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 5].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 5].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].OP = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 5].Value)
-                                    };
-                                }
-                            }
+                                SetMVPropertyValue(nameof(MVConfig.RSV), controllerConfig.MVs[row_MV - 2], parsingValue);
 
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
 
-                            try
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 6].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].dMVup = Convert.ToDouble(wMVs.Cells[row_MV, 6].Value);
-                                }
+                                SetMVPropertyValue(nameof(MVConfig.OP), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.dMVup), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.dMVdown), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.dMV), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.LoLimitInput), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.HiLimitInput), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.LoLimitEng), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.HiLimitEng), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.ActualStateOPCPath), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.DesiredStateOPCPath), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.SSValue), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.CalculatedValue), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.OPHi), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.OPLo), controllerConfig.MVs[row_MV - 2], parsingValue);
+
                             }
-                            catch
+                            catch (Exception ex)
                             {
 
-                            }
-
-
-                            try
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 7].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].dMVdown = Convert.ToDouble(wMVs.Cells[row_MV, 7].Value);
-                                }
-                            }
-                            catch
-                            {
+                                Console.WriteLine(ex.Message);
 
                             }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 8].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].dMV = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 8].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 8].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].dMV = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 8].Value)
-                                    };
-                                }
-                            }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 9].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].LoLimitInput = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 9].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 9].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].LoLimitInput = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 9].Value)
-                                    };
-                                }
-                            }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 10].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].HiLimitInput = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 10].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 10].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].HiLimitInput = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 10].Value)
-                                    };
-                                }
-                            }
-
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 11].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].LoLimitEng = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 11].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 11].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].LoLimitEng = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 11].Value)
-                                    };
-                                }
-                            }
-
-
-
-
-
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 12].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].HiLimitEng = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 12].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 12].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].HiLimitEng = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 12].Value)
-                                    };
-                                }
-                            }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 13].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].ActualStateOPCPath = Convert.ToString(wMVs.Cells[row_MV, 13].Value);
-
-                                }
-                            }
-                            catch
-                            {
-
-                            }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 14].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].DesiredStateOPCPath = Convert.ToString(wMVs.Cells[row_MV, 14].Value);
-
-                                }
-                            }
-                            catch
-                            {
-
-                            }
-
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 15].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].SSValue = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 15].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 15].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].SSValue = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 15].Value)
-                                    };
-                                }
-                            }
-
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 16].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].CalculatedValue = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 16].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 16].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].CalculatedValue = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 16].Value)
-                                    };
-                                }
-                            }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 17].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].OPHi = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 17].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 17].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].OPHi = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 17].Value)
-                                    };
-                                }
-                            }
-
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wMVs.Cells[row_MV, 18].Value))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].OPLo = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wMVs.Cells[row_MV, 18].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wMVs.Cells[row_MV, 18].Value)))
-                                {
-                                    controllerConfig.MVs[row_MV - 2].OPLo = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wMVs.Cells[row_MV, 18].Value)
-                                    };
-                                }
-                            }
-
-
-
+                        
                             row_MV++;
 
                         }
@@ -637,52 +264,28 @@ namespace Test_Excel
                             }
 
 
-
                             try
                             {
-                                if (!string.IsNullOrEmpty((string)wDVs.Cells[row_DV, 2].Value))
-                                {
-                                    controllerConfig.DVs[row_DV - 2].Value = new ComplexDouble()
-                                    {
-                                        OPCTag = Convert.ToString(wDVs.Cells[row_DV, 2].Value)
-                                    };
-                                }
-                            }
-                            catch
-                            {
-                                if (!double.IsNaN(Convert.ToDouble(wDVs.Cells[row_DV, 2].Value)))
-                                {
-                                    controllerConfig.DVs[row_DV - 2].Value = new ComplexDouble()
-                                    {
-                                        Value = Convert.ToDouble(wDVs.Cells[row_DV, 2].Value)
-                                    };
-                                }
-                            }
 
+                                int columNum = 2;
 
-                            try
-                            {
-                                if (!string.IsNullOrEmpty((string)wDVs.Cells[row_DV, 3].Value))
-                                {
-                                    controllerConfig.DVs[row_DV - 2].ActualStateOPCPath = Convert.ToString(wDVs.Cells[row_DV, 3].Value);
+                                object parsingValue = wDVs.Cells[row_DV, columNum].Value;
 
-                                }
-                            }
-                            catch
-                            {
+                                SetDVPropertyValue(nameof(DVConfig.Value), controllerConfig.DVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wDVs.Cells[row_MV, ++columNum].Value;
+
+                                SetDVPropertyValue(nameof(DVConfig.ActualStateOPCPath), controllerConfig.DVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wDVs.Cells[row_MV, ++columNum].Value;
+
+                                SetDVPropertyValue(nameof(DVConfig.DesiredStateOPCPath), controllerConfig.DVs[row_MV - 2], parsingValue);
 
                             }
-
-                            try
+                            catch (Exception ex)
                             {
-                                if (!string.IsNullOrEmpty((string)wDVs.Cells[row_DV, 4].Value))
-                                {
-                                    controllerConfig.DVs[row_DV - 2].DesiredStateOPCPath = Convert.ToString(wDVs.Cells[row_DV, 4].Value);
 
-                                }
-                            }
-                            catch
-                            {
+                                Console.WriteLine(ex.Message);
 
                             }
 
@@ -699,11 +302,11 @@ namespace Test_Excel
                             {
                                 controllerConfig.Models.Add(new ModelConfig()
                                 {
-                                    Gain = Convert.ToDouble(coefs[1]),
+                                    Gain = ConvertDoubleCustom(coefs[1]),
 
-                                    T = Convert.ToDouble(coefs[5]),
+                                    T = ConvertDoubleCustom(coefs[5]),
 
-                                    tau = Convert.ToDouble(coefs[3]),
+                                    tau = ConvertDoubleCustom(coefs[3]),
 
                                     cvindex = i - 4,
 
@@ -712,9 +315,11 @@ namespace Test_Excel
                                     TypePF = TypesPF.FirstOrder
                                 });
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                continue;
+
+                                Console.WriteLine(ex.Message);
+
                             }
 
                         }
@@ -724,9 +329,9 @@ namespace Test_Excel
                             {
                                 controllerConfig.Models.Add(new ModelConfig()
                                 {
-                                    Gain = Convert.ToDouble(coefs[1]),
+                                    Gain = ConvertDoubleCustom(coefs[1]),
 
-                                    tau = Convert.ToDouble(coefs[3]),
+                                    tau = ConvertDoubleCustom(coefs[3]),
 
                                     isIntegrity = true,
 
@@ -737,9 +342,11 @@ namespace Test_Excel
                                     TypePF = TypesPF.Integer
                                 });
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                continue;
+
+                                Console.WriteLine(ex.Message);
+
                             }
 
                         }
@@ -749,13 +356,13 @@ namespace Test_Excel
                             {
                                 controllerConfig.Models.Add(new ModelConfig()
                                 {
-                                    Gain = Convert.ToDouble(coefs[1]),
+                                    Gain = ConvertDoubleCustom(coefs[1]),
 
-                                    T = Convert.ToDouble(coefs[5]),
+                                    T = ConvertDoubleCustom(coefs[5]),
 
-                                    T2 = Convert.ToDouble(coefs[7]),
+                                    T2 = ConvertDoubleCustom(coefs[7]),
 
-                                    tau = Convert.ToDouble(coefs[3]),
+                                    tau = ConvertDoubleCustom(coefs[3]),
 
                                     cvindex = i - 4,
 
@@ -764,49 +371,227 @@ namespace Test_Excel
                                     TypePF = TypesPF.SecondOrder
                                 });
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                continue;
+
+                                Console.WriteLine(ex.Message);
+
                             }
 
                         }
-
-
                     }
                 }
             }
         }
 
-
-        class ReadModel
+        static void SetCVPropertyValue(string propertyName, CVConfig cVConfig, object excelValue)
         {
-            string _NameMV;
-            string _NameCV;
-            double _Gain;
+            Type type = typeof(CVConfig);
 
-            public string NameMV { get => _NameMV; set => _NameMV = value; }
-            public string NameCV { get => _NameCV; set => _NameCV = value; }
-            public double Gain { get => _Gain; set => _Gain = value; }
+            var property = type.GetProperty(propertyName);
+
+            if (excelValue is null)
+            {
+                return;
+            }
+
+            string parsExcelValue;
+
+            if (!string.IsNullOrEmpty(excelValue.ToString().Replace(',', '.')))
+            {
+                parsExcelValue = excelValue.ToString().Replace(',', '.');
+            }
+            else
+            {
+                return;
+            }
+
+
+            double localvalue;
+
+            if (property.PropertyType == typeof(ComplexDouble))
+            {
+                if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out localvalue))
+                {
+                    var newValuePropertyValue = new ComplexDouble()
+                    {
+                        Value = localvalue
+                    };
+
+                    property?.SetValue(cVConfig, newValuePropertyValue);
+                }
+                else
+                {
+                    parsExcelValue = parsExcelValue.Replace('.', ',');
+
+                    var newValuePropertyValue = new ComplexDouble()
+                    {
+                        OPCTag = parsExcelValue
+                    };
+
+                    property?.SetValue(cVConfig, newValuePropertyValue);
+
+                }
+            }
+            else
+            {
+                if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out localvalue))
+                {
+                    property?.SetValue(cVConfig, localvalue);
+                }
+                else
+                {
+                    property?.SetValue(cVConfig, parsExcelValue);
+                }
+            }
+
         }
 
-        class Model
+        static void SetMVPropertyValue(string propertyName, MVConfig mVConfig, object excelValue)
         {
-            public int mvindex { get; set; }
-            public int cvindex { get; set; }
+            Type type = typeof(MVConfig);
+            var property = type.GetProperty(propertyName);
 
-            public double Gain { get; set; }
+            if (excelValue is null)
+            {
+                return;
+            }
+
+
+            string parsExcelValue;
+            if (!string.IsNullOrEmpty(excelValue.ToString().Replace(',', '.')))
+            {
+                parsExcelValue = excelValue.ToString().Replace(',', '.');
+            }
+            else
+            {
+                return;
+            }
+
+
+            double localvalue;
+            if (property.PropertyType == typeof(ComplexDouble))
+            {
+                if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out localvalue))
+                {
+                    var newValuePropertyValue = new ComplexDouble()
+                    {
+                        Value = localvalue
+                    };
+
+                    property?.SetValue(mVConfig, newValuePropertyValue);
+                }
+                else
+                {
+                    parsExcelValue = parsExcelValue.Replace('.', ',');
+
+                    var newValuePropertyValue = new ComplexDouble()
+                    {
+                        OPCTag = parsExcelValue
+                    };
+
+                    property?.SetValue(mVConfig, newValuePropertyValue);
+
+                }
+            }
+            else
+            {
+                if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out localvalue))
+                {
+                    property?.SetValue(mVConfig, localvalue);
+                }
+                else
+                {
+                    property?.SetValue(mVConfig, parsExcelValue);
+                }
+            }
+
         }
 
-        class CV
+        static void SetDVPropertyValue(string propertyName, DVConfig dVConfig, object excelValue)
         {
-            public double Value { get; set; }
-            public string Name { get; set; }
+            Type type = typeof(DVConfig);
+
+            var property = type.GetProperty(propertyName);
+
+            if (excelValue is null)
+            {
+                return;
+            }
+
+
+            string parsExcelValue;
+
+            if (!string.IsNullOrEmpty(excelValue.ToString().Replace(',', '.')))
+            {
+                parsExcelValue = excelValue.ToString().Replace(',', '.');
+            }
+            else
+            {
+                return;
+            }
+
+            double localvalue;
+
+            if (property.PropertyType == typeof(ComplexDouble))
+            {
+                if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out localvalue))
+                {
+                    var newValuePropertyValue = new ComplexDouble()
+                    {
+                        Value = localvalue
+                    };
+
+                    property?.SetValue(dVConfig, newValuePropertyValue);
+                }
+                else
+                {
+                    parsExcelValue = parsExcelValue.Replace('.', ',');
+
+                    var newValuePropertyValue = new ComplexDouble()
+                    {
+                        OPCTag = parsExcelValue
+                    };
+
+                    property?.SetValue(dVConfig, newValuePropertyValue);
+
+                }
+            }
+            else
+            {
+                if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out localvalue))
+                {
+                    property?.SetValue(dVConfig, localvalue);
+                }
+                else
+                {
+                    property?.SetValue(dVConfig, parsExcelValue);
+                }
+            }
+
         }
 
-        class MV
+        static double ConvertDoubleCustom(string value)
         {
-            public double Value { get; set; }
-            public string Name { get; set; }
+            string parsExcelValue;
+
+            if (!string.IsNullOrEmpty(value.ToString().Replace(',', '.')))
+            {
+                parsExcelValue = value.ToString().Replace(',', '.');
+            }
+            else
+            {
+                return double.NaN;
+            }
+
+            if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double localvalue))
+            {
+                return localvalue;
+            }
+            else
+            {
+                return double.NaN;
+            }
         }
     }
 }
