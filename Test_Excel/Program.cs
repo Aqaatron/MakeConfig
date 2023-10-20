@@ -20,6 +20,7 @@ namespace Test_Excel
         static ExcelWorksheet wMVs;
         static ExcelWorksheet wDVs;
         static ExcelWorksheet wMPC;
+        static string fileNameTemplate; 
 
         static ControllerConfig controllerConfig = new ControllerConfig();
 
@@ -27,7 +28,34 @@ namespace Test_Excel
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            pMatrix = new ExcelPackage(new FileInfo("Configuration_Data.xlsx"));
+            Console.WriteLine("Введите имя файла (или полный путь к файлу) шаблона Excel: ");
+
+            fileNameTemplate = Console.ReadLine();
+
+            if (fileNameTemplate.Contains(".xlsx"))
+            {
+                try
+                {
+                    pMatrix = new ExcelPackage(new FileInfo(fileNameTemplate));
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ошибка в открытии файла шаблона: " + ex.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    pMatrix = new ExcelPackage(new FileInfo(fileNameTemplate + ".xlsx"));
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ошибка в открытии файла шаблона: " + ex.Message);
+                }
+            }
 
             wMatrix = pMatrix.Workbook.Worksheets["Matrix"];
             wCVs = pMatrix.Workbook.Worksheets["CV"];
@@ -38,12 +66,13 @@ namespace Test_Excel
 
             GenerateConfig();
 
+
             XmlSerializer contrexport = new XmlSerializer(typeof(MPCConfig.ControllerConfig));
-            using (FileStream fs = new FileStream("ItsYourMPCConfig.xml", FileMode.Create/*FileMode.OpenOrCreate*/))
+            using (FileStream fs = new FileStream(fileNameTemplate + ".xml", FileMode.Create/*FileMode.OpenOrCreate*/))
             {
                 contrexport.Serialize(fs, controllerConfig);
             }
-            Console.WriteLine("Конфигурация создана успешно!");
+            Console.WriteLine("Конфигурация создана успешно, имя файла: " + fileNameTemplate + ".xml");
             Console.ReadLine();
         }
 
