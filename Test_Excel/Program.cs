@@ -66,12 +66,32 @@ namespace Test_Excel
 
             GenerateConfig();
 
-
-            XmlSerializer contrexport = new XmlSerializer(typeof(MPCConfig.ControllerConfig));
-            using (FileStream fs = new FileStream(fileNameTemplate + ".xml", FileMode.Create/*FileMode.OpenOrCreate*/))
+            try
             {
-                contrexport.Serialize(fs, controllerConfig);
+                if (fileNameTemplate.Contains(".xlsx"))
+                {
+                    fileNameTemplate = fileNameTemplate.Replace(".xlsx", "");
+
+                    XmlSerializer contrexport = new XmlSerializer(typeof(MPCConfig.ControllerConfig));
+                    using (FileStream fs = new FileStream(fileNameTemplate + ".xml", FileMode.Create/*FileMode.OpenOrCreate*/))
+                    {
+                        contrexport.Serialize(fs, controllerConfig);
+                    }
+                }
+                else
+                {
+                    XmlSerializer contrexport = new XmlSerializer(typeof(MPCConfig.ControllerConfig));
+                    using (FileStream fs = new FileStream(fileNameTemplate + ".xml", FileMode.Create/*FileMode.OpenOrCreate*/))
+                    {
+                        contrexport.Serialize(fs, controllerConfig);
+                    }
+                }
+                
+            }catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка в создании конфигурации: " + ex.Message);
             }
+           
             Console.WriteLine("Конфигурация создана успешно, имя файла: " + fileNameTemplate + ".xml");
             Console.ReadLine();
         }
