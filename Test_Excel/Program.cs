@@ -320,15 +320,15 @@ namespace Test_Excel
 
                                 object parsingValue = wDVs.Cells[row_DV, columNum].Value;
 
-                                SetDVPropertyValue(nameof(DVConfig.Value), controllerConfig.DVs[row_MV - 2], parsingValue);
+                                SetDVPropertyValue(nameof(DVConfig.Value), controllerConfig.DVs[row_DV - 2], parsingValue);
 
-                                parsingValue = wDVs.Cells[row_MV, ++columNum].Value;
+                                parsingValue = wDVs.Cells[row_DV, ++columNum].Value;
 
-                                SetDVPropertyValue(nameof(DVConfig.ActualStateOPCPath), controllerConfig.DVs[row_MV - 2], parsingValue);
+                                SetDVPropertyValue(nameof(DVConfig.ActualStateOPCPath), controllerConfig.DVs[row_DV - 2], parsingValue);
 
-                                parsingValue = wDVs.Cells[row_MV, ++columNum].Value;
+                                parsingValue = wDVs.Cells[row_DV, ++columNum].Value;
 
-                                SetDVPropertyValue(nameof(DVConfig.DesiredStateOPCPath), controllerConfig.DVs[row_MV - 2], parsingValue);
+                                SetDVPropertyValue(nameof(DVConfig.DesiredStateOPCPath), controllerConfig.DVs[row_DV - 2], parsingValue);
 
                             }
                             catch (Exception ex)
