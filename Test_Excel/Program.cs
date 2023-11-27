@@ -32,6 +32,8 @@ namespace Test_Excel
 
             fileNameTemplate = Console.ReadLine();
 
+            fileNameTemplate = fileNameTemplate.Trim('"');
+
             if (fileNameTemplate.Contains(".xlsx"))
             {
                 try
@@ -112,19 +114,29 @@ namespace Test_Excel
 
             if (wMPC != null)
             {
-                if (!string.IsNullOrEmpty((string)wMPC.Cells[2, 1].Value))
+                if (!string.IsNullOrEmpty((string)wMPC.Cells[2, 2].Value))
                 {
-                    controllerConfig.ActualStateOPCPath = Convert.ToString(wMPC.Cells[2, 1].Value);
+                    controllerConfig.ControllerName = Convert.ToString(wMPC.Cells[2, 1].Value);
                 }
 
                 if (!string.IsNullOrEmpty((string)wMPC.Cells[2, 2].Value))
                 {
-                    controllerConfig.DesiredStateOPCPath = Convert.ToString(wMPC.Cells[2, 2].Value);
+                    controllerConfig.ActualStateOPCPath = Convert.ToString(wMPC.Cells[2, 2].Value);
                 }
 
                 if (!string.IsNullOrEmpty((string)wMPC.Cells[2, 3].Value))
                 {
-                    controllerConfig.WatchDogOPCPath = Convert.ToString(wMPC.Cells[2, 3].Value);
+                    controllerConfig.DesiredStateOPCPath = Convert.ToString(wMPC.Cells[2, 3].Value);
+                }
+
+                if (!string.IsNullOrEmpty((string)wMPC.Cells[2, 4].Value))
+                {
+                    controllerConfig.WatchDogOPCPath = Convert.ToString(wMPC.Cells[2, 4].Value);
+                }
+
+                if (!string.IsNullOrEmpty((string)wMPC.Cells[2, 5].Value))
+                {
+                    controllerConfig.NumberOfCelectedEconFunctionPath = Convert.ToString(wMPC.Cells[2, 5].Value);
                 }
             }
 
@@ -446,8 +458,12 @@ namespace Test_Excel
 
             string parsExcelValue;
 
+            string oldExcelValue;
+
             if (!string.IsNullOrEmpty(excelValue.ToString().Replace(',', '.')))
             {
+                oldExcelValue = excelValue.ToString();
+
                 parsExcelValue = excelValue.ToString().Replace(',', '.');
             }
             else
@@ -471,7 +487,7 @@ namespace Test_Excel
                 }
                 else
                 {
-                    parsExcelValue = parsExcelValue.Replace('.', ',');
+                    parsExcelValue = oldExcelValue;
 
                     var newValuePropertyValue = new ComplexDouble()
                     {
@@ -508,8 +524,10 @@ namespace Test_Excel
 
 
             string parsExcelValue;
+            string oldExcelValue;
             if (!string.IsNullOrEmpty(excelValue.ToString().Replace(',', '.')))
             {
+                oldExcelValue = excelValue.ToString();
                 parsExcelValue = excelValue.ToString().Replace(',', '.');
             }
             else
@@ -532,7 +550,7 @@ namespace Test_Excel
                 }
                 else
                 {
-                    parsExcelValue = parsExcelValue.Replace('.', ',');
+                    parsExcelValue = oldExcelValue;
 
                     var newValuePropertyValue = new ComplexDouble()
                     {
@@ -571,8 +589,11 @@ namespace Test_Excel
 
             string parsExcelValue;
 
+            string oldExcelValue;
+
             if (!string.IsNullOrEmpty(excelValue.ToString().Replace(',', '.')))
             {
+                oldExcelValue = excelValue.ToString();
                 parsExcelValue = excelValue.ToString().Replace(',', '.');
             }
             else
@@ -595,7 +616,7 @@ namespace Test_Excel
                 }
                 else
                 {
-                    parsExcelValue = parsExcelValue.Replace('.', ',');
+                    parsExcelValue = oldExcelValue;
 
                     var newValuePropertyValue = new ComplexDouble()
                     {
