@@ -200,6 +200,14 @@ namespace Test_Excel
 
                                 SetCVPropertyValue(nameof(CVConfig.SSValue), controllerConfig.CVs[row_CV - 2], parsingValue);
 
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.TargetRTOCost), controllerConfig.CVs[row_CV - 2], parsingValue);
+
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.TargetRTO), controllerConfig.CVs[row_CV - 2], parsingValue);
+
                             }
                             catch(Exception ex)
                             {
@@ -489,13 +497,18 @@ namespace Test_Excel
                 {
                     parsExcelValue = oldExcelValue;
 
-                    var newValuePropertyValue = new ComplexDouble()
+                    var newValuePropertyValue = new ComplexDouble();
+
+                    if (parsExcelValue.Contains("M:"))
                     {
-                        OPCTag = parsExcelValue
-                    };
+                        newValuePropertyValue.ModuleTag = parsExcelValue;
+                    }
+                    else
+                    {
+                        newValuePropertyValue.OPCTag = parsExcelValue;
+                    }
 
                     property?.SetValue(cVConfig, newValuePropertyValue);
-
                 }
             }
             else
@@ -552,10 +565,16 @@ namespace Test_Excel
                 {
                     parsExcelValue = oldExcelValue;
 
-                    var newValuePropertyValue = new ComplexDouble()
+                    var newValuePropertyValue = new ComplexDouble();
+
+                    if (parsExcelValue.Contains("M:"))
                     {
-                        OPCTag = parsExcelValue
-                    };
+                        newValuePropertyValue.ModuleTag = parsExcelValue;
+                    }
+                    else
+                    {
+                        newValuePropertyValue.OPCTag = parsExcelValue;
+                    }
 
                     property?.SetValue(mVConfig, newValuePropertyValue);
 
@@ -618,10 +637,18 @@ namespace Test_Excel
                 {
                     parsExcelValue = oldExcelValue;
 
-                    var newValuePropertyValue = new ComplexDouble()
+                    var newValuePropertyValue = new ComplexDouble();
+
+                    if (parsExcelValue.Contains("M:"))
                     {
-                        OPCTag = parsExcelValue
-                    };
+                        newValuePropertyValue.ModuleTag = parsExcelValue;
+                    }
+                    else
+                    {
+                        newValuePropertyValue.OPCTag = parsExcelValue;
+                    }
+
+                    
 
                     property?.SetValue(dVConfig, newValuePropertyValue);
 
