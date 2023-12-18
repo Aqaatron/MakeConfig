@@ -24,6 +24,10 @@ namespace Test_Excel
 
         static ControllerConfig controllerConfig = new ControllerConfig();
 
+        static ModelTypes modelType = ModelTypes.CONTROL;
+
+        static ModelPriorities modelPriority = ModelPriorities.NORMAL;
+
         static void Main(string[] args)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -361,6 +365,8 @@ namespace Test_Excel
                             row_DV++;
                         }
 
+
+
                         //string a = coefs[1];
                         //double value;
                         //double.TryParse(string.Join("", a.Where(c => char.IsDigit(c))), out value);
@@ -369,6 +375,16 @@ namespace Test_Excel
                         {
                             try
                             {
+
+                                SetModelProperties(coefs);
+
+                                var typePF = TypesPF.FirstOrder;
+
+                                if (coefs.Contains(nameof(TypesPF.RealInteger)))
+                                {
+                                    typePF = TypesPF.RealInteger;
+                                }                                                           
+
                                 controllerConfig.Models.Add(new ModelConfig()
                                 {
                                     Gain = ConvertDoubleCustom(coefs[1]),
@@ -381,8 +397,13 @@ namespace Test_Excel
 
                                     mvindex = j - 4,
 
-                                    TypePF = TypesPF.FirstOrder
+                                    TypePF = typePF,
+
+                                    ModelType = modelType,
+
+                                    Priority = modelPriority
                                 });
+
                             }
                             catch (Exception ex)
                             {
@@ -396,6 +417,8 @@ namespace Test_Excel
                         {
                             try
                             {
+                                SetModelProperties(coefs);
+
                                 controllerConfig.Models.Add(new ModelConfig()
                                 {
                                     Gain = ConvertDoubleCustom(coefs[1]),
@@ -408,7 +431,11 @@ namespace Test_Excel
 
                                     mvindex = j - 4,
 
-                                    TypePF = TypesPF.Integer
+                                    TypePF = TypesPF.Integer,
+
+                                    ModelType = modelType,
+
+                                    Priority = modelPriority
                                 });
                             }
                             catch (Exception ex)
@@ -423,6 +450,8 @@ namespace Test_Excel
                         {
                             try
                             {
+                                SetModelProperties(coefs);
+
                                 controllerConfig.Models.Add(new ModelConfig()
                                 {
                                     Gain = ConvertDoubleCustom(coefs[1]),
@@ -437,7 +466,11 @@ namespace Test_Excel
 
                                     mvindex = j - 4,
 
-                                    TypePF = TypesPF.SecondOrder
+                                    TypePF = TypesPF.SecondOrder,
+
+                                    ModelType = modelType,
+
+                                    Priority = modelPriority
                                 });
                             }
                             catch (Exception ex)
@@ -501,6 +534,8 @@ namespace Test_Excel
 
                     if (parsExcelValue.Contains("M:"))
                     {
+                        parsExcelValue = parsExcelValue.Replace("M:", "");
+
                         newValuePropertyValue.ModuleTag = parsExcelValue;
                     }
                     else
@@ -688,6 +723,32 @@ namespace Test_Excel
             else
             {
                 return double.NaN;
+            }
+        }
+
+        static void SetModelProperties(string[] coefs)
+        {
+            if (coefs.Contains(nameof(ModelTypes.PREDICTION)))
+            {
+                modelType = ModelTypes.PREDICTION;
+
+            }else if (coefs.Contains(nameof(ModelTypes.CONTROL)))
+            {
+                modelType = ModelTypes.CONTROL;
+            }
+
+            if (coefs.Contains(nameof(ModelPriorities.LOW)))
+            {
+                modelPriority = ModelPriorities.LOW;
+
+            }
+            else if (coefs.Contains(nameof(ModelPriorities.LOWEST)))
+            {
+                modelPriority = ModelPriorities.LOWEST;
+
+            }else if (coefs.Contains(nameof(ModelPriorities.NORMAL)))
+            {
+                modelPriority = ModelPriorities.NORMAL;
             }
         }
     }
