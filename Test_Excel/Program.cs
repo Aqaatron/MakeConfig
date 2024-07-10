@@ -212,6 +212,14 @@ namespace Test_Excel
 
                                 SetCVPropertyValue(nameof(CVConfig.TargetRTO), controllerConfig.CVs[row_CV - 2], parsingValue);
 
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.Weigth), controllerConfig.CVs[row_CV - 2], parsingValue);
+
+                                parsingValue = wCVs.Cells[row_CV, ++columNum].Value;
+
+                                SetCVPropertyValue(nameof(CVConfig.Priority), controllerConfig.CVs[row_CV - 2], parsingValue);
+
                             }
                             catch(Exception ex)
                             {
@@ -310,6 +318,14 @@ namespace Test_Excel
                                 parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
 
                                 SetMVPropertyValue(nameof(MVConfig.OPLo), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.RegDirection), controllerConfig.MVs[row_MV - 2], parsingValue);
+
+                                parsingValue = wMVs.Cells[row_MV, ++columNum].Value;
+
+                                SetMVPropertyValue(nameof(MVConfig.Weigth), controllerConfig.MVs[row_MV - 2], parsingValue);
 
                             }
                             catch (Exception ex)
@@ -554,6 +570,8 @@ namespace Test_Excel
                 }
                 else
                 {
+                    parsExcelValue = oldExcelValue;
+
                     property?.SetValue(cVConfig, parsExcelValue);
                 }
             }
@@ -615,6 +633,21 @@ namespace Test_Excel
 
                 }
             }
+            else if (property.PropertyType == typeof(RegDirections))
+            {
+
+
+                if (parsExcelValue.Contains(nameof(RegDirections.REVERSE)))
+                {
+                    property?.SetValue(mVConfig, RegDirections.REVERSE);
+                }
+                else
+                {
+                    property?.SetValue(mVConfig, RegDirections.DIRECT);
+                }
+
+               
+            }
             else
             {
                 if (double.TryParse(parsExcelValue, NumberStyles.Any, CultureInfo.InvariantCulture, out localvalue))
@@ -623,6 +656,8 @@ namespace Test_Excel
                 }
                 else
                 {
+                    parsExcelValue = oldExcelValue;
+
                     property?.SetValue(mVConfig, parsExcelValue);
                 }
             }
@@ -697,6 +732,8 @@ namespace Test_Excel
                 }
                 else
                 {
+                    parsExcelValue = oldExcelValue;
+
                     property?.SetValue(dVConfig, parsExcelValue);
                 }
             }
